@@ -12,7 +12,7 @@ RUN mvn clean package -DskipTests
 FROM openjdk:21-slim
 WORKDIR /app
 # Копируем сгенерированный jar из первого этапа (проверьте имя jar-файла, оно может быть другим)
-COPY --from=build /app/target/migomed.jar app.jar
+COPY --from=build /app/target/migomed-0.0.1-SNAPSHOT.jar app.jar
 
 # Открываем указанный порт (при необходимости)
 ENV PORT=8080
