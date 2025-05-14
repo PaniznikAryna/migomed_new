@@ -6,5 +6,4 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class MethodSecurityConfig {
-    // Этот класс может быть пустым — достаточно самой аннотации!
 }

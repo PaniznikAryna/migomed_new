@@ -33,7 +33,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String input) throws UsernameNotFoundException {
         Users user;
 
-        // Если входящая строка состоит только из цифр, предполагаем, что это идентификатор пользователя.
         if (input.matches("\\d+")) {
             Long userId = Long.parseLong(input);
             Optional<Users> optionalUser = usersRepository.findById(userId);
@@ -42,7 +41,6 @@ public class CustomUserDetailsService implements UserDetailsService {
             }
             user = optionalUser.get();
         } else {
-            // В противном случае ищем по фамилии
             Optional<Users> optionalUser = usersRepository.findBySurname(input);
             if (optionalUser.isEmpty()) {
                 throw new UsernameNotFoundException("Пользователь с фамилией " + input + " не найден");

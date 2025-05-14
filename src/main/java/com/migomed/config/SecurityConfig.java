@@ -6,7 +6,6 @@ import com.migomed.Security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-// Импорты для нового API SecurityFilterChain
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -29,7 +28,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // Создаём JWT-фильтр и добавляем его в цепочку фильтров до стандартного фильтра аутентификации
         JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(jwtUtil, userDetailsService);
 
         http
@@ -37,7 +35,6 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        // Эндпоинт регистрации доступен только пользователям с ролью ADMIN
                         .requestMatchers("/auth/register").hasRole("ADMIN")
                         .requestMatchers("/auth/login", "/**").permitAll()
                         .anyRequest().authenticated()

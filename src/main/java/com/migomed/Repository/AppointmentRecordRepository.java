@@ -7,6 +7,5 @@ import java.util.List;
 
 @Repository
 public interface AppointmentRecordRepository extends JpaRepository<AppointmentRecord, Long> {
-    // Поиск по подстроке в поле client_info (без учёта регистра)
     List<AppointmentRecord> findByClientInfoContainingIgnoreCase(String clientInfo);
 }

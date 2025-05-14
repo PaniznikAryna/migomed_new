@@ -41,10 +41,8 @@ public class ServiceEntityService {
             }
             serviceEntity.setWorkers(fullWorkers);
         }
-        // Сохраняем сущность
+
         ServiceEntity saved = serviceRepository.save(serviceEntity);
-        // После сохранения заменяем коллекцию работников на новую копию, чтобы "отвязать" её от PersistenceContext
-        // Это предотвращает дальнейшие модификации в момент сериализации
         saved.setWorkers(new HashSet<>(saved.getWorkers()));
         return saved;
     }

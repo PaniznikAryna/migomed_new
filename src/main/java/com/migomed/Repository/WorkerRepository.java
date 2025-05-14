@@ -12,9 +12,7 @@ public interface WorkerRepository extends JpaRepository<Worker, Long> {
     Optional<Worker> findByUser_Id(Long userId);
 
 
-    // Поиск по частичному совпадению специализации (игнорируя регистр)
     List<Worker> findBySpecializationContainingIgnoreCase(String specialization);
 
-    // Вывод записей, где admin == true
     List<Worker> findByAdminTrue();
 }

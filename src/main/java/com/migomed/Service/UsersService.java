@@ -25,12 +25,10 @@ public class UsersService {
         this.workerRepository = workerRepository;
     }
 
-    // Регистрация пользователя с обязательной передачей поля worker
     public Users registerUser(RegisterDTO dto) {
         if (dto.getWorker() == null) {
             throw new IllegalArgumentException("Поле 'worker' должно быть задано");
         }
-        // Шифруем паспорт в качестве входных данных для пароля (можно изменить логику, если надо)
         String hashed = passwordEncoder.encode(dto.getPassportNumber());
         Users user = Users.builder()
                 .surname(dto.getSurname())
@@ -44,7 +42,6 @@ public class UsersService {
         return usersRepository.save(user);
     }
 
-    // Логин пользователя по фамилии и паролю
     public Users loginUserBySurnameAndPassword(String surname, String rawPassword) {
         Optional<Users> maybeUser = usersRepository.findBySurname(surname);
         if (maybeUser.isPresent()) {
@@ -59,34 +56,28 @@ public class UsersService {
         return null;
     }
 
-    // Получение пользователя по id
     public Optional<Users> findById(Long id) {
         return usersRepository.findById(id);
     }
 
-    // Получение списка всех пользователей
     public List<Users> findAll() {
         return usersRepository.findAll();
     }
 
-    // Получение списка пользователей-сотрудников (worker = true)
     public List<Users> findByWorker(Boolean worker) {
         return usersRepository.findByWorker(worker);
     }
 
-    // Получение списка всех сотрудников
     public List<Users> findWorkers() {
         List<Users> workers = usersRepository.findByWorkerTrue();
         workers.forEach(worker -> worker.setWorkerDetails(workerRepository.findByUser_Id(worker.getId()).orElse(null)));
         return workers;
     }
 
-    // Поиск пользователей по частичному совпадению фамилии
     public List<Users> findBySurnameContains(String surname) {
         return usersRepository.findBySurnameContainingIgnoreCase(surname);
     }
 
-    // Обновление пользователя – метод, который сохраняет изменения (update или save)
     public Users updateUser(Long id, Users updatedUser) {
         Optional<Users> existingUserOptional = usersRepository.findById(id);
         if (existingUserOptional.isEmpty()) {
@@ -94,7 +85,6 @@ public class UsersService {
         }
         Users existingUser = existingUserOptional.get();
 
-        // Обновляем только переданные поля
         if (updatedUser.getSurname() != null) {
             existingUser.setSurname(updatedUser.getSurname());
         }
@@ -120,7 +110,6 @@ public class UsersService {
         return usersRepository.save(existingUser);
     }
 
-    // Удаление пользователя по id
     public void deleteById(Long id) {
         Optional<Users> userOpt = usersRepository.findById(id);
         if(userOpt.isPresent()){
