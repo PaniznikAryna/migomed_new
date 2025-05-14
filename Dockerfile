@@ -1,17 +1,21 @@
-# Используйте официальный образ OpenJDK 21 (выберите нужную вариацию: slim или jdk-slim)
+# === Шаг 1: Сборка приложения с помощью Maven ===
+FROM maven:3.8-openjdk-21-slim AS build
+WORKDIR /app
+# Копируем только файл pom.xml для кеширования зависимостей
+COPY pom.xml .
+# Копируем исходники
+COPY src ./src
+# Собираем jar-файл (ключ -DskipTests, если хотите пропустить тесты)
+RUN mvn clean package -DskipTests
+
+# === Шаг 2: Запуск приложения ===
 FROM openjdk:21-slim
+WORKDIR /app
+# Копируем сгенерированный jar из первого этапа (проверьте имя jar-файла, оно может быть другим)
+COPY --from=build /app/target/migomed.jar app.jar
 
-# Аргумент, определяющий путь к jar-файлу, сгенерированному после сборки Maven
-ARG JAR_FILE=target/migomed.jar
-
-# Скопируйте jar-файл из каталога сборки контейнера в корень файловой системы контейнера под именем app.jar
-COPY ${JAR_FILE} app.jar
-
-# Задайте переменную окружения с портом (если необходимо)
+# Открываем указанный порт (при необходимости)
 ENV PORT=8080
-
-# Откройте нужный порт
 EXPOSE ${PORT}
 
-# Определите команду, которая будет запущена при старте контейнера
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
