@@ -43,4 +43,11 @@ public class ServiceEntityController {
     public ResponseEntity<List<ServiceEntity>> searchByTitle(@RequestParam String title) {
         return ResponseEntity.ok(serviceEntityService.searchByTitle(title));
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{id}")
+    public ResponseEntity<ServiceEntity> updateService(@PathVariable Long id, @RequestBody ServiceEntity updatedService) {
+        return ResponseEntity.ok(serviceEntityService.updateService(id, updatedService));
+    }
+
 }

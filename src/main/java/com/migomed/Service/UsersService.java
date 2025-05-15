@@ -1,6 +1,7 @@
 package com.migomed.Service;
 
 import com.migomed.DTO.RegisterDTO;
+import com.migomed.Entity.Gender;
 import com.migomed.Entity.Users;
 import com.migomed.Repository.UsersRepository;
 import com.migomed.Repository.WorkerRepository;
@@ -26,9 +27,10 @@ public class UsersService {
     }
 
     public Users registerUser(RegisterDTO dto) {
-        if (dto.getWorker() == null) {
-            throw new IllegalArgumentException("Поле 'worker' должно быть задано");
+        if (dto.getWorker() == null || dto.getGender() == null) {
+            throw new IllegalArgumentException("Поле 'worker' и 'gender' должны быть заданы");
         }
+
         String hashed = passwordEncoder.encode(dto.getPassportNumber());
         Users user = Users.builder()
                 .surname(dto.getSurname())
@@ -38,9 +40,51 @@ public class UsersService {
                 .password(hashed)
                 .dateOfBirth(dto.getDateOfBirth().toLocalDate())
                 .worker(dto.getWorker())
+                .gender(dto.getGender()) // Сохранение пола
                 .build();
         return usersRepository.save(user);
     }
+
+    public Users updateUser(Long id, Users updatedUser) {
+        Optional<Users> existingUserOptional = usersRepository.findById(id);
+        if (existingUserOptional.isEmpty()) {
+            throw new IllegalArgumentException("Пользователь не найден");
+        }
+
+        Users existingUser = existingUserOptional.get();
+
+        if (updatedUser.getSurname() != null) {
+            existingUser.setSurname(updatedUser.getSurname());
+        }
+        if (updatedUser.getName() != null) {
+            existingUser.setName(updatedUser.getName());
+        }
+        if (updatedUser.getPatronymic() != null) {
+            existingUser.setPatronymic(updatedUser.getPatronymic());
+        }
+        if (updatedUser.getPassportNumber() != null) {
+            existingUser.setPassportNumber(updatedUser.getPassportNumber());
+        }
+        if (updatedUser.getDateOfBirth() != null) {
+            existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
+        }
+        if (updatedUser.getWorker() != null) {
+            existingUser.setWorker(updatedUser.getWorker());
+        }
+        if (updatedUser.getGender() != null) {
+            existingUser.setGender(updatedUser.getGender()); // Обновление пола
+        }
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
+
+        return usersRepository.save(existingUser);
+    }
+
+    public List<Users> findByGender(Gender gender) {
+        return usersRepository.findByGender(gender);
+    }
+
 
     public Users loginUserBySurnameAndPassword(String surname, String rawPassword) {
         Optional<Users> maybeUser = usersRepository.findBySurname(surname);
@@ -76,38 +120,6 @@ public class UsersService {
 
     public List<Users> findBySurnameContains(String surname) {
         return usersRepository.findBySurnameContainingIgnoreCase(surname);
-    }
-
-    public Users updateUser(Long id, Users updatedUser) {
-        Optional<Users> existingUserOptional = usersRepository.findById(id);
-        if (existingUserOptional.isEmpty()) {
-            throw new IllegalArgumentException("Пользователь не найден");
-        }
-        Users existingUser = existingUserOptional.get();
-
-        if (updatedUser.getSurname() != null) {
-            existingUser.setSurname(updatedUser.getSurname());
-        }
-        if (updatedUser.getName() != null) {
-            existingUser.setName(updatedUser.getName());
-        }
-        if (updatedUser.getPatronymic() != null) {
-            existingUser.setPatronymic(updatedUser.getPatronymic());
-        }
-        if (updatedUser.getPassportNumber() != null) {
-            existingUser.setPassportNumber(updatedUser.getPassportNumber());
-        }
-        if (updatedUser.getDateOfBirth() != null) {
-            existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
-        }
-        if (updatedUser.getWorker() != null) {
-            existingUser.setWorker(updatedUser.getWorker());
-        }
-        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-        }
-
-        return usersRepository.save(existingUser);
     }
 
     public void deleteById(Long id) {

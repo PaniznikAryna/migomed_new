@@ -1,12 +1,10 @@
 package com.migomed.DTO;
 
-import lombok.*;
+import com.migomed.Entity.Gender;
+import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class RegisterDTO {
     private String surname;
     private String name;
@@ -14,4 +12,5 @@ public class RegisterDTO {
     private String passportNumber;
     private LocalDateTime dateOfBirth;
     private Boolean worker;
+    private Gender gender;
 }

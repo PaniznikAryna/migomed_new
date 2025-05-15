@@ -1,5 +1,6 @@
 package com.migomed.Controller;
 
+import com.migomed.Entity.Gender;
 import com.migomed.Entity.Users;
 import com.migomed.Service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,5 +81,11 @@ public class UsersController {
         }
         usersService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/gender")
+    public ResponseEntity<List<Users>> getUsersByGender(@RequestParam Gender gender) {
+        return ResponseEntity.ok(usersService.findByGender(gender));
     }
 }

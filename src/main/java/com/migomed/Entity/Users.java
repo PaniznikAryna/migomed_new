@@ -45,6 +45,10 @@ public class Users {
     @ToString.Include
     private Boolean worker;
 
+    @Column(nullable = false, length = 10)
+    @Enumerated(EnumType.STRING)
+    private Gender gender;  // Добавляем поле gender
+
     @Column(nullable = false, length = 255)
     private String password;
 
