@@ -40,7 +40,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .httpBasic(Customizer.withDefaults());
+               // .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
