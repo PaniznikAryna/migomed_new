@@ -21,7 +21,7 @@ public class WorkerController {
     }
 
     // Создание нового сотрудника (привязка к пользователю с userId) – только админ
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{userId}")
     public ResponseEntity<Worker> createWorker(@PathVariable Long userId, @RequestBody Worker workerDetails) {
         try {
