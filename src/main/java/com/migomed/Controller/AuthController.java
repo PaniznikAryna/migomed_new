@@ -25,7 +25,7 @@ public class AuthController {
     }
 
     // Доступ к регистрации разрешён только администраторам (проверка происходит через GrantedAuthorities)
-    @PreAuthorize("hasRole('ADMIN')")
+   // @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO) {
         // Например, администратор регистрирует нового пользователя,
