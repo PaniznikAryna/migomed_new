@@ -59,7 +59,7 @@ public class PhotoController {
     }
 
     // Поиск фото по секции – только ADMIN
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/search")
     public ResponseEntity<List<Photo>> searchPhotosBySection(@RequestParam String section) {
         List<Photo> photos = photoService.searchPhotosBySection(section);
