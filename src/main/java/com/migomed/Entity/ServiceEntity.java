@@ -14,7 +14,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-// Используем только id для сравнения, чтобы не задействовать коллекцию workers
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 public class ServiceEntity {
@@ -25,13 +24,17 @@ public class ServiceEntity {
     @ToString.Include
     private Long id;
 
-    @Column(name = "title", length = 100, nullable = false)
+    @Column(name = "title", length = 255, nullable = false)
     @ToString.Include
     private String title;
 
     @Column(name = "cost", nullable = false)
     @ToString.Include
     private Double cost;
+
+    @Column(name = "section", nullable = false, length = 255)
+    @ToString.Include
+    private String section;
 
     @ManyToMany
     @JoinTable(
