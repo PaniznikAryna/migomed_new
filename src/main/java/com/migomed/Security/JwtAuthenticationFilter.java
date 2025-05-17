@@ -29,25 +29,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
-        String token = null;
-        String username = null;
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-            try {
-                username = jwtUtil.extractUsername(token);
-            } catch (Exception e) {
-                logger.error("Ошибка при извлечении имени пользователя из токена", e);
-            }
+        // Если заголовка нет или он пустой или не начинается с "Bearer ", просто продолжаем цепочку фильтров.
+        if (authHeader == null || authHeader.isBlank() || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = authHeader.substring(7);
+        String username = null;
+        try {
+            username = jwtUtil.extractUsername(token);
+        } catch (Exception e) {
+            logger.error("Ошибка при извлечении имени пользователя из токена", e);
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            // Здесь мы вызываем валидацию токена с переданным subject (имя пользователя)
             if (jwtUtil.validateToken(token, userDetails.getUsername())) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities()
-                        );
+                                userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
@@ -55,4 +58,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
 }
