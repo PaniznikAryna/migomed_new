@@ -47,8 +47,6 @@ public class ServiceEntityService {
         return saved;
     }
 
-
-
     public ServiceEntity updateService(Long id, ServiceEntity updatedService) {
         ServiceEntity existing = serviceRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Услуга не найдена"));
@@ -80,7 +78,8 @@ public class ServiceEntityService {
         return serviceRepository.findById(id);
     }
 
-    public List<ServiceEntity> searchByTitle(String title) {
-        return serviceRepository.findByTitleContainingIgnoreCase(title);
+    // Новый метод поиска по секции
+    public List<ServiceEntity> searchBySection(String section) {
+        return serviceRepository.findBySectionContainingIgnoreCase(section);
     }
 }

@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface ServiceRepository extends JpaRepository<ServiceEntity, Long> {
-    List<ServiceEntity> findByTitleContainingIgnoreCase(String title);
+    List<ServiceEntity> findBySectionContainingIgnoreCase(String section);
 }

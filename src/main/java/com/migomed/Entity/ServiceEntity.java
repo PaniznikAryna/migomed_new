@@ -17,14 +17,15 @@ import java.util.Set;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 public class ServiceEntity {
-    //jjj
+    // Поле идентификатора
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     @ToString.Include
     private Long id;
 
-    @Column(name = "title", length = 255, nullable = false)
+    // Для поля title используем тип TEXT (без ограничений длины)
+    @Column(name = "title", nullable = false, columnDefinition = "TEXT")
     @ToString.Include
     private String title;
 
@@ -32,7 +33,7 @@ public class ServiceEntity {
     @ToString.Include
     private Double cost;
 
-    @Column(name = "section", nullable = false, length = 255)
+    @Column(name = "section", nullable = false, columnDefinition = "TEXT")
     @ToString.Include
     private String section;
 
