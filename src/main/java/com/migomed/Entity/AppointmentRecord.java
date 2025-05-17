@@ -16,8 +16,9 @@ public class AppointmentRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "specialist_id", nullable = false)
-    private Long specialistId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "worker_id", nullable = false)
+    private Worker worker;
 
     @Column(name = "client_info", nullable = false, length = 255)
     private String clientInfo;

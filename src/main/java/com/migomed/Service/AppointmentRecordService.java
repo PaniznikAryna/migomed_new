@@ -1,26 +1,25 @@
 package com.migomed.Service;
 
 import com.migomed.Entity.AppointmentRecord;
-import com.migomed.Entity.Users;
+import com.migomed.Entity.Worker;
 import com.migomed.Repository.AppointmentRecordRepository;
-import com.migomed.Repository.UsersRepository;
+import com.migomed.Repository.WorkerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class AppointmentRecordService {
 
     private final AppointmentRecordRepository recordRepository;
-    private final UsersRepository usersRepository;
+    private final WorkerRepository workerRepository; // Для загрузки объекта Worker
 
     @Autowired
-    public AppointmentRecordService(AppointmentRecordRepository recordRepository, UsersRepository usersRepository) {
+    public AppointmentRecordService(AppointmentRecordRepository recordRepository, WorkerRepository workerRepository) {
         this.recordRepository = recordRepository;
-        this.usersRepository = usersRepository;
+        this.workerRepository = workerRepository;
     }
 
     public List<AppointmentRecord> getAllRecords() {
@@ -28,14 +27,14 @@ public class AppointmentRecordService {
     }
 
     public AppointmentRecord createRecord(AppointmentRecord record) {
-        try {
-            Long clientId = Long.parseLong(record.getClientInfo());
-            Optional<Users> clientOpt = usersRepository.findById(clientId);
-            if (clientOpt.isPresent()) {
-                Users client = clientOpt.get();
-                record.setClientInfo(String.valueOf(client.getId()));
+        // Если в JSON передан вложенный объект worker с id, загрузим его из базы
+        if (record.getWorker() != null && record.getWorker().getId() != null) {
+            Optional<Worker> workerOpt = workerRepository.findById(record.getWorker().getId());
+            if (workerOpt.isPresent()) {
+                record.setWorker(workerOpt.get());
+            } else {
+                throw new IllegalArgumentException("Сотрудник не найден");
             }
-        } catch (NumberFormatException e) {
         }
         return recordRepository.save(record);
     }
@@ -43,7 +42,13 @@ public class AppointmentRecordService {
     public AppointmentRecord updateRecord(Long id, AppointmentRecord updatedRecord) {
         AppointmentRecord existing = recordRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Запись не найдена"));
-        existing.setSpecialistId(updatedRecord.getSpecialistId());
+        // Обновляем сотрудника, если передан новый id
+        if (updatedRecord.getWorker() != null && updatedRecord.getWorker().getId() != null) {
+            Worker worker = workerRepository.findById(updatedRecord.getWorker().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Сотрудник не найден"));
+            existing.setWorker(worker);
+        }
+        // Обновляем остальные поля
         existing.setClientInfo(updatedRecord.getClientInfo());
         existing.setPhoneNumber(updatedRecord.getPhoneNumber());
         existing.setAppointmentDate(updatedRecord.getAppointmentDate());
@@ -60,21 +65,8 @@ public class AppointmentRecordService {
         return recordRepository.findById(id);
     }
 
-    public List<AppointmentRecord> searchByClientFio(String fio) {
-        return recordRepository.findByClientInfoContainingIgnoreCase(fio);
-    }
-
-    public List<AppointmentRecord> searchBySpecialistFio(String fio) {
-        List<AppointmentRecord> allRecords = recordRepository.findAll();
-        return allRecords.stream().filter(record -> {
-            Optional<Users> specialistOpt = usersRepository.findById(record.getSpecialistId());
-            if (specialistOpt.isPresent()) {
-                Users specialist = specialistOpt.get();
-                String fullName = specialist.getSurname() + " " + specialist.getName() +
-                        (specialist.getPatronymic() != null ? " " + specialist.getPatronymic() : "");
-                return fullName.toLowerCase().contains(fio.toLowerCase());
-            }
-            return false;
-        }).collect(Collectors.toList());
+    // Дополнительный метод для поиска всех записей, относящихся к конкретному сотруднику
+    public List<AppointmentRecord> findRecordsByWorkerId(Long workerId) {
+        return recordRepository.findByWorker_Id(workerId);
     }
 }

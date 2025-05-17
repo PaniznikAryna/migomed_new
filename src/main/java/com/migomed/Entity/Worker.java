@@ -14,7 +14,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-// Используем только id для equals и hashCode, чтобы не задействовать коллекцию services
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 public class Worker {
@@ -44,4 +43,7 @@ public class Worker {
     @ManyToMany(mappedBy = "workers")
     @Builder.Default
     private Set<ServiceEntity> services = new HashSet<>();
+
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<AppointmentRecord> appointmentRecords;
 }
