@@ -1,10 +1,11 @@
 package com.migomed.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "visits")
@@ -19,20 +20,20 @@ public class Visit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Время визита (тип в БД – TIME WITHOUT TIME ZONE)
+    // Изменяем тип поля на LocalDate для хранения даты визита
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Column(name = "date_visit", nullable = false)
-    private LocalTime dateVisit;
+    private LocalDate dateVisit;
 
-    // Текстовое описание приёма или записи
     @Column(name = "appointments", nullable = false)
     private String appointments;
 
-    // Каждый визит связан с одним сотрудником (Worker)
+    // Связь ManyToOne с сущностью Worker (один сотрудник может иметь много визитов)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_worker", nullable = false)
     private Worker worker;
 
-    // Каждый визит связан с одним пользователем (Users)
+    // Связь ManyToOne с сущностью Users (один пользователь может создавать много визитов)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user", nullable = false)
     private Users user;
