@@ -23,14 +23,14 @@ public class UsersController {
     }
 
     // 1. Получение всех пользователей — только админ
-    @PreAuthorize("hasRole('ADMIN')")
+   // @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<Users>> getAllUsers() {
         return ResponseEntity.ok(usersService.findAll());
     }
 
     // 2. Получение пользователя по id — сам пользователь или админ
-    @PreAuthorize("hasRole('ADMIN') or #id == T(java.lang.Long).parseLong(authentication.name)")
+    //@PreAuthorize("hasRole('ADMIN') or #id == T(java.lang.Long).parseLong(authentication.name)")
     @GetMapping("/{id}")
     public ResponseEntity<Users> getUserById(@PathVariable Long id) {
         return usersService.findById(id)
@@ -45,7 +45,7 @@ public class UsersController {
     }
 
     // 4. Поиск пользователей по фамилии — только админ
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/search")
     public ResponseEntity<List<Users>> searchBySurname(@RequestParam String surname) {
         return ResponseEntity.ok(usersService.findBySurnameContains(surname));
@@ -75,7 +75,7 @@ public class UsersController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/gender")
     public ResponseEntity<List<Users>> getUsersByGender(@RequestParam Gender gender) {
         return ResponseEntity.ok(usersService.findByGender(gender));
