@@ -85,19 +85,24 @@ public class UsersService {
         return usersRepository.findByGender(gender);
     }
 
-
     public Users loginUserBySurnameAndPassword(String surname, String rawPassword) {
-        Optional<Users> maybeUser = usersRepository.findBySurname(surname);
-        if (maybeUser.isPresent()) {
-            Users user = maybeUser.get();
-            if (rawPassword == null || rawPassword.isEmpty()) {
-                throw new IllegalArgumentException("Пароль не может быть пустым!");
-            }
-            if (passwordEncoder.matches(rawPassword, user.getPassword())) {
+        List<Users> users = usersRepository.findBySurname(surname);
+
+        // Если по фамилии ничего не найдено, считаем, что указана неверная фамилия
+        if (users.isEmpty()) {
+            return null; // или: throw new UsernameNotFoundException("Неверная фамилия: " + surname);
+        }
+
+        // Перебираем всех пользователей с этой фамилией
+        for (Users user : users) {
+            // Если пароль совпадает, возвращаем пользователя
+            if (rawPassword != null && !rawPassword.isEmpty() && passwordEncoder.matches(rawPassword, user.getPassword())) {
                 return user;
             }
         }
-        return null;
+
+        // Если ни у одного пользователя пароль не совпал, возвращаем null (или выбрасываем исключение)
+        return null; // или: throw new BadCredentialsException("Неверный логин или пароль для фамилии: " + surname);
     }
 
     public Optional<Users> findById(Long id) {

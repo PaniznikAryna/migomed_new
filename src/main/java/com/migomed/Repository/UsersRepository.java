@@ -5,13 +5,11 @@ import com.migomed.Entity.Gender;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface UsersRepository extends JpaRepository<Users, Long> {
-    Users findByPassportNumber(String passportNumber);
-
-    Optional<Users> findBySurname(String surname);
+    // Теперь этот метод возвращает список, так как фамилии могут повторяться
+    List<Users> findBySurname(String surname);
 
     List<Users> findBySurnameContainingIgnoreCase(String surname);
 
