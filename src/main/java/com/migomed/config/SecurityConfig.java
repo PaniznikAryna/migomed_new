@@ -12,6 +12,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -27,18 +32,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // Создаём JWT фильтр, который будет генерировать и обрабатывать токены
+        // Создаем JWT фильтр для обработки токенов
         JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(jwtUtil, userDetailsService);
 
         http
-                // Отключаем CSRF, поскольку мы работаем в stateless режиме (без сессий)
+                // Включаем CORS: он будет использовать настройки из bean corsConfigurationSource()
+                .cors().and()
+                // Отключаем CSRF, так как мы работаем в stateless режиме
                 .csrf(csrf -> csrf.disable())
-                // Устанавливаем статическую стратегию управления сессиями – без состояния
+                // Устанавливаем стратегию управления сессиями - без хранения состояния
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Разрешаем доступ ко всем маршрутам
-                .authorizeHttpRequests(authz -> authz
-                        .anyRequest().permitAll())
-                // Добавляем JWT фильтр в цепочку перед фильтром аутентификации
+                // Разрешаем публичный доступ ко всем маршрутам
+                .authorizeHttpRequests(authz -> authz.anyRequest().permitAll())
+                // Добавляем JWT фильтр в цепочку перед стандартным фильтром аутентификации
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -47,5 +53,24 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
+    }
+
+    // Bean для глобальной настройки CORS
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // Разрешаем запросы со всех доменов для разработки, в продакшн настройте список конкретных доменов!
+        configuration.setAllowedOriginPatterns(List.of("*"));
+        // Разрешенные HTTP методы
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // Разрешаем любые заголовки запроса
+        configuration.setAllowedHeaders(List.of("*"));
+        // Разрешаем передачу куки HTTP (если требуется)
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // Применяем настройки ко всем маршрутам
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
