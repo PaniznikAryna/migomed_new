@@ -85,7 +85,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         // Теперь точно разрешаем доступ к регистрации и логину всем пользователям
-                        .requestMatchers("/auth/register", "/auth/login", "/users").permitAll()                        .anyRequest().authenticated())
+                        .requestMatchers("/auth/register", "/auth/login", "/users", "/photos", "/services").permitAll()                        .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
