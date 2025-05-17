@@ -4,8 +4,10 @@ import com.migomed.Entity.Worker;
 import com.migomed.Service.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+// @PreAuthorize можно раскомментировать, если требуется ограничить доступ
+// import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +23,7 @@ public class WorkerController {
     }
 
     // Создание нового сотрудника (привязка к пользователю с userId) – только админ
-  //  @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{userId}")
     public ResponseEntity<Worker> createWorker(@PathVariable Long userId, @RequestBody Worker workerDetails) {
         try {
@@ -33,7 +35,7 @@ public class WorkerController {
     }
 
     // Редактирование работника – только админ
-    //@PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{workerId}")
     public ResponseEntity<Worker> updateWorker(@PathVariable Long workerId, @RequestBody Worker updatedWorker) {
         try {
@@ -72,9 +74,7 @@ public class WorkerController {
     }
 
     // Удаление работника – только админ.
-    // При удалении запись о сотруднике удаляется, а у соответствующего пользователя
-    // в таблице Users поле "worker" меняется на false.
-  //  @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{workerId}")
     public ResponseEntity<Void> deleteWorker(@PathVariable Long workerId) {
         try {

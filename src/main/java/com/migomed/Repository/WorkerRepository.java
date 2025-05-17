@@ -11,8 +11,8 @@ public interface WorkerRepository extends JpaRepository<Worker, Long> {
 
     Optional<Worker> findByUser_Id(Long userId);
 
-
     List<Worker> findBySpecializationContainingIgnoreCase(String specialization);
 
     List<Worker> findByAdminTrue();
+
 }

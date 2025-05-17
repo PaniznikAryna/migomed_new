@@ -45,7 +45,6 @@ public class WorkerService {
         return worker;
     }
 
-
     public Worker updateWorker(Long workerId, Worker updatedWorker) {
         Optional<Worker> workerOpt = workerRepository.findById(workerId);
         if (!workerOpt.isPresent()) {
@@ -87,13 +86,10 @@ public class WorkerService {
 
         Users user = worker.getUser();
         if (user != null) {
-
             user.setWorker(false);
             user.setWorkerDetails(null);
             usersRepository.saveAndFlush(user);
         }
         workerRepository.deleteById(workerId);
     }
-
-
 }
