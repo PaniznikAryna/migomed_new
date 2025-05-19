@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -19,36 +20,44 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     @Autowired
-    public AuthController(UsersService usersService) {
+    public AuthController(UsersService usersService, JwtUtil jwtUtil) { // внедряем через конструктор
         this.usersService = usersService;
-        this.jwtUtil = new JwtUtil(); // Можно также объявить JwtUtil как Spring-бин
+        this.jwtUtil = jwtUtil;
     }
 
-    // Доступ к регистрации разрешён только администраторам (проверка происходит через GrantedAuthorities)
-   //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO) {
-        // Например, администратор регистрирует нового пользователя,
-        // используя фамилию и номер паспорта как логин и пароль
         Users registeredUser = usersService.registerUser(registerDTO);
         return ResponseEntity.ok("Пользователь зарегистрирован с ID: " + registeredUser.getId());
     }
-    // Эндпоинт логина: вход по фамилии и паролю (паспорт)
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         Users user = usersService.loginUserBySurnameAndPassword(loginDTO.getSurname(), loginDTO.getPassword());
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неверный логин или пароль");
         }
-        // Генерация JWT-токена (subject – ID пользователя)
-        String token = jwtUtil.generateToken(String.valueOf(user.getId()));
+
+        // Формирование списка ролей на основе данных из базы
+        List<String> roles;
+        if (user.getWorkerDetails() == null) {
+            roles = List.of("ROLE_USER");
+        } else {
+            if (Boolean.TRUE.equals(user.getWorkerDetails().getAdmin())) {
+                roles = List.of("ROLE_ADMIN");
+            } else {
+                roles = List.of("ROLE_DOCTOR");
+            }
+        }
+
+        // Генерация полного JWT-токена со subject равным id пользователя
+        String token = jwtUtil.generateToken(String.valueOf(user.getId()), roles);
         return ResponseEntity.ok(token);
     }
 
-    // Эндпоинт логаута (в stateless-системе logout реализуется на клиенте или через blacklist)
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
         return ResponseEntity.ok("Вы успешно вышли из системы");
     }
-
 }

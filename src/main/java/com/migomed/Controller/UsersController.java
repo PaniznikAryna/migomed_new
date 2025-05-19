@@ -23,14 +23,14 @@ public class UsersController {
     }
 
     // 1. Получение всех пользователей — только админ
-   // @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<List<Users>> getAllUsers() {
         return ResponseEntity.ok(usersService.findAll());
     }
 
     // 2. Получение пользователя по id — сам пользователь или админ
-    //@PreAuthorize("hasRole('ADMIN') or #id == T(java.lang.Long).parseLong(authentication.name)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #id == T(java.lang.Long).parseLong(authentication.name)")
     @GetMapping("/{id}")
     public ResponseEntity<Users> getUserById(@PathVariable Long id) {
         return usersService.findById(id)
@@ -45,14 +45,14 @@ public class UsersController {
     }
 
     // 4. Поиск пользователей по фамилии — только админ
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/search")
     public ResponseEntity<List<Users>> searchBySurname(@RequestParam String surname) {
         return ResponseEntity.ok(usersService.findBySurnameContains(surname));
     }
 
     // 5. Изменение (обновление) пользователя — только админ
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Users> updateUser(@PathVariable Long id, @RequestBody Users updatedUser) {
         try {
@@ -64,7 +64,7 @@ public class UsersController {
     }
 
     // 6. Удаление пользователя — только админ
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         Optional<Users> existingUser = usersService.findById(id);

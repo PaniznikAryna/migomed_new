@@ -19,7 +19,7 @@ public class ServiceEntityController {
         this.serviceEntityService = serviceEntityService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<ServiceEntity> createService(@RequestBody ServiceEntity serviceEntity) {
         return ResponseEntity.ok(serviceEntityService.createService(serviceEntity));
@@ -42,13 +42,13 @@ public class ServiceEntityController {
         return ResponseEntity.ok(serviceEntityService.searchBySection(section));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ServiceEntity> updateService(@PathVariable Long id, @RequestBody ServiceEntity updatedService) {
         return ResponseEntity.ok(serviceEntityService.updateService(id, updatedService));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteService(@PathVariable Long id) {
         serviceEntityService.deleteService(id);

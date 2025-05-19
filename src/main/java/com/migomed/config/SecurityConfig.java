@@ -10,12 +10,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.util.List;
 
 @Configuration
@@ -32,19 +32,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // Создаем JWT фильтр для обработки токенов
+        // Создаем наш JWT-фильтр для обработки токенов
         JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(jwtUtil, userDetailsService);
 
         http
-                // Включаем CORS: он будет использовать настройки из bean corsConfigurationSource()
-                .cors().and()
-                // Отключаем CSRF, так как мы работаем в stateless режиме
-                .csrf(csrf -> csrf.disable())
-                // Устанавливаем стратегию управления сессиями - без хранения состояния
+                .cors().and() // Используем настройки, определенные в bean corsConfigurationSource()
+                .csrf(csrf -> csrf.disable()) // CSRF отключен, так как система без состояния (stateless)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Разрешаем публичный доступ ко всем маршрутам
+                // Для неаутентифицированных пользователей автоматически назначаем роль ROLE_GUEST
+                .anonymous(a -> a.authorities(AuthorityUtils.createAuthorityList("ROLE_GUEST")))
+                // Разрешаем запросы всем, а управление доступом осуществляется через аннотации или внутри фильтров
                 .authorizeHttpRequests(authz -> authz.anyRequest().permitAll())
-                // Добавляем JWT фильтр в цепочку перед стандартным фильтром аутентификации
+                // Добавляем JWT-фильтр в цепочку фильтров перед стандартным фильтром аутентификации
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -55,21 +54,16 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
-    // Bean для глобальной настройки CORS
+    // Глобальная настройка CORS – разрешаем запросы с любых доменов, всех методов, заголовков и передачу куков
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Разрешаем запросы со всех доменов для разработки, в продакшн настройте список конкретных доменов!
         configuration.setAllowedOriginPatterns(List.of("*"));
-        // Разрешенные HTTP методы
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        // Разрешаем любые заголовки запроса
         configuration.setAllowedHeaders(List.of("*"));
-        // Разрешаем передачу куки HTTP (если требуется)
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Применяем настройки ко всем маршрутам
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }

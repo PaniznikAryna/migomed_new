@@ -4,6 +4,7 @@ import com.migomed.Entity.Schedule;
 import com.migomed.Service.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class ScheduleController {
         this.scheduleService = scheduleService;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<Schedule> createSchedule(@RequestBody Schedule schedule) {
         try {
@@ -30,6 +32,7 @@ public class ScheduleController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Schedule> updateSchedule(@PathVariable Long id, @RequestBody Schedule schedule) {
         try {
@@ -40,6 +43,7 @@ public class ScheduleController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSchedule(@PathVariable Long id) {
         try {
@@ -62,7 +66,6 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleService.getAllSchedules());
     }
 
-    // Получение расписаний по ID сотрудника:
     @GetMapping("/worker/{workerId}")
     public ResponseEntity<List<Schedule>> getSchedulesByWorkerId(@PathVariable Long workerId) {
         List<Schedule> schedules = scheduleService.getSchedulesByWorkerId(workerId);

@@ -4,6 +4,7 @@ import com.migomed.Entity.Worker;
 import com.migomed.Service.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class WorkerController {
     }
 
     // Создание нового сотрудника (привязка к пользователю с userId) – только админ
-    // @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/{userId}")
     public ResponseEntity<Worker> createWorker(@PathVariable Long userId, @RequestBody Worker workerDetails) {
         try {
@@ -33,7 +34,7 @@ public class WorkerController {
     }
 
     // Редактирование работника – только админ
-    // @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{workerId}")
     public ResponseEntity<Worker> updateWorker(@PathVariable Long workerId, @RequestBody Worker updatedWorker) {
         try {
@@ -78,7 +79,7 @@ public class WorkerController {
     }
 
     // Удаление работника – только админ.
-    // @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{workerId}")
     public ResponseEntity<Void> deleteWorker(@PathVariable Long workerId) {
         try {

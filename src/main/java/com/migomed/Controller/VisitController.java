@@ -4,7 +4,9 @@ import com.migomed.Entity.Visit;
 import com.migomed.Service.VisitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +21,8 @@ public class VisitController {
         this.visitService = visitService;
     }
 
-    // Создание нового визита: POST /visits/{workerId}/{userId}
+    // Создание нового визита: разрешено администратору или сотруднику (worker) с совпадающим workerId.
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (#workerId == principal.workerId)")
     @PostMapping("/{workerId}/{userId}")
     public ResponseEntity<Visit> createVisit(@PathVariable Long workerId,
                                              @PathVariable Long userId,
@@ -32,7 +35,8 @@ public class VisitController {
         }
     }
 
-    // Обновление визита по id: PUT /visits/{id}
+    // Обновление визита по id: разрешено, если админ или если визит принадлежит сотруднику с workerId, равным principal.workerId.
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @visitService.isVisitOwnedByWorker(#id, principal.workerId)")
     @PutMapping("/{id}")
     public ResponseEntity<Visit> updateVisit(@PathVariable Long id,
                                              @RequestBody Visit visit) {
@@ -44,7 +48,8 @@ public class VisitController {
         }
     }
 
-    // Удаление визита по id: DELETE /visits/{id}
+    // Удаление визита по id: разрешено, если админ или если визит принадлежит сотруднику с совпадающим workerId.
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @visitService.isVisitOwnedByWorker(#id, principal.workerId)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVisit(@PathVariable Long id) {
         try {
@@ -55,7 +60,8 @@ public class VisitController {
         }
     }
 
-    // Получение визита по id: GET /visits/{id}
+    // Получение визита по id: разрешено, если админ, или если визит принадлежит сотруднику (workerId совпадает) или пользователю (userId совпадает).
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @visitService.isVisitOwnedByWorker(#id, principal.workerId) or @visitService.isVisitBelongsToUser(#id, principal.userId)")
     @GetMapping("/{id}")
     public ResponseEntity<Visit> getVisitById(@PathVariable Long id) {
         Optional<Visit> visitOpt = visitService.getVisitById(id);
@@ -63,20 +69,24 @@ public class VisitController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Получение списка всех визитов: GET /visits
+    // Получение списка всех визитов: разрешено только для администратора.
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<List<Visit>> getAllVisits() {
         return ResponseEntity.ok(visitService.getAllVisits());
     }
 
-    // Получение визитов по id пользователя: GET /visits/user/{userId}
+    // Получение визитов по id пользователя: разрешено, если запрашиваемый userId совпадает с principal.userId,
+    // или если пользователь – админ, или если authenticated пользователь является сотрудником.
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (#userId == principal.userId) or (principal.workerId != null)")
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Visit>> getVisitsByUserId(@PathVariable Long userId) {
         List<Visit> visits = visitService.getVisitsByUserId(userId);
         return ResponseEntity.ok(visits);
     }
 
-    // Получение визитов по id сотрудника: GET /visits/worker/{workerId}
+    // Получение визитов по id сотрудника: разрешено, если админ или если {workerId} совпадает с principal.workerId.
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (#workerId == principal.workerId)")
     @GetMapping("/worker/{workerId}")
     public ResponseEntity<List<Visit>> getVisitsByWorkerId(@PathVariable Long workerId) {
         List<Visit> visits = visitService.getVisitsByWorkerId(workerId);

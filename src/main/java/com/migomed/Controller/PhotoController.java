@@ -21,7 +21,7 @@ public class PhotoController {
     }
 
     // Добавление фото – только ADMIN
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<Photo> createPhoto(@RequestBody Photo photo) {
         Photo savedPhoto = photoService.savePhoto(photo);
@@ -29,7 +29,7 @@ public class PhotoController {
     }
 
     // Редактирование фото – только ADMIN
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Photo> updatePhoto(@PathVariable Long id, @RequestBody Photo photo) {
         Photo updatedPhoto = photoService.updatePhoto(id, photo);
