@@ -4,8 +4,6 @@ import com.migomed.Entity.Worker;
 import com.migomed.Service.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-// @PreAuthorize можно раскомментировать, если требуется ограничить доступ
-// import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -71,6 +69,12 @@ public class WorkerController {
     @GetMapping("/admins")
     public ResponseEntity<List<Worker>> getAdmins() {
         return ResponseEntity.ok(workerService.getAdmins());
+    }
+
+    // Вывод работников, не являющихся администраторами – доступен всем
+    @GetMapping("/non-admins")
+    public ResponseEntity<List<Worker>> getNonAdmins() {
+        return ResponseEntity.ok(workerService.getNoAdmins());
     }
 
     // Удаление работника – только админ.

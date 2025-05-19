@@ -79,6 +79,9 @@ public class WorkerService {
         return workerRepository.findByAdminTrue();
     }
 
+    public List<Worker> getNoAdmins() {
+        return workerRepository.findByAdminFalse();
+    }
     @Transactional
     public void deleteWorker(Long workerId) {
         Worker worker = workerRepository.findById(workerId)
