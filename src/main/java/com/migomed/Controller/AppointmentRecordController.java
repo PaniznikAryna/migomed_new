@@ -21,21 +21,18 @@ public class AppointmentRecordController {
         this.recordService = recordService;
     }
 
-    // 1. Получение всех записей – доступно только администратору
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<AppointmentRecord>> getAllRecords() {
         return ResponseEntity.ok(recordService.getAllRecords());
     }
 
-    // 2. Создание записи – доступно всем (при условии, что клиент передаст корректный вложенный объект worker)
     @PostMapping
     public ResponseEntity<AppointmentRecord> createRecord(@RequestBody AppointmentRecord record) {
         AppointmentRecord created = recordService.createRecord(record);
         return ResponseEntity.ok(created);
     }
 
-    // 3. Обновление записи – только для админа
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<AppointmentRecord> updateRecord(@PathVariable Long id, @RequestBody AppointmentRecord record) {
@@ -47,7 +44,6 @@ public class AppointmentRecordController {
         }
     }
 
-    // 4. Удаление записи – только для админа
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRecord(@PathVariable Long id) {
@@ -59,7 +55,6 @@ public class AppointmentRecordController {
         }
     }
 
-    // 5. Получение записи по ID – только для админа
     @PreAuthorize("hasRole('ROLE_ADMIN') or (#workerId == principal.workerId)")
     @GetMapping("/{id}")
     public ResponseEntity<AppointmentRecord> getRecordById(@PathVariable Long id) {
@@ -68,7 +63,6 @@ public class AppointmentRecordController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // 6. Получение записей по сотруднику (worker) – можно ограничить доступ по необходимости
     @PreAuthorize("hasRole('ROLE_ADMIN') or (#workerId == principal.workerId)")
     @GetMapping("/worker/{workerId}")
     public ResponseEntity<List<AppointmentRecord>> getRecordsByWorkerId(@PathVariable Long workerId) {

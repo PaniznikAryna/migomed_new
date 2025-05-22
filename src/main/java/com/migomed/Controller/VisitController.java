@@ -21,7 +21,6 @@ public class VisitController {
         this.visitService = visitService;
     }
 
-    // Создание нового визита: разрешено администратору или сотруднику (worker) с совпадающим workerId.
     @PreAuthorize("hasRole('ROLE_ADMIN') or (#workerId == principal.workerId)")
     @PostMapping("/{workerId}/{userId}")
     public ResponseEntity<Visit> createVisit(@PathVariable Long workerId,
@@ -35,7 +34,6 @@ public class VisitController {
         }
     }
 
-    // Обновление визита по id: разрешено, если админ или если визит принадлежит сотруднику с workerId, равным principal.workerId.
     @PreAuthorize("hasRole('ROLE_ADMIN') or @visitService.isVisitOwnedByWorker(#id, principal.workerId)")
     @PutMapping("/{id}")
     public ResponseEntity<Visit> updateVisit(@PathVariable Long id,
@@ -48,7 +46,6 @@ public class VisitController {
         }
     }
 
-    // Удаление визита по id: разрешено, если админ или если визит принадлежит сотруднику с совпадающим workerId.
     @PreAuthorize("hasRole('ROLE_ADMIN') or @visitService.isVisitOwnedByWorker(#id, principal.workerId)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVisit(@PathVariable Long id) {
@@ -60,7 +57,6 @@ public class VisitController {
         }
     }
 
-    // Получение визита по id: разрешено, если админ, или если визит принадлежит сотруднику (workerId совпадает) или пользователю (userId совпадает).
     @PreAuthorize("hasRole('ROLE_ADMIN') or @visitService.isVisitOwnedByWorker(#id, principal.workerId) or @visitService.isVisitBelongsToUser(#id, principal.userId)")
     @GetMapping("/{id}")
     public ResponseEntity<Visit> getVisitById(@PathVariable Long id) {
@@ -69,15 +65,12 @@ public class VisitController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Получение списка всех визитов: разрешено только для администратора.
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<List<Visit>> getAllVisits() {
         return ResponseEntity.ok(visitService.getAllVisits());
     }
 
-    // Получение визитов по id пользователя: разрешено, если запрашиваемый userId совпадает с principal.userId,
-    // или если пользователь – админ, или если authenticated пользователь является сотрудником.
     @PreAuthorize("hasRole('ROLE_ADMIN') or (#userId == principal.userId) or (principal.workerId != null)")
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Visit>> getVisitsByUserId(@PathVariable Long userId) {
@@ -85,7 +78,6 @@ public class VisitController {
         return ResponseEntity.ok(visits);
     }
 
-    // Получение визитов по id сотрудника: разрешено, если админ или если {workerId} совпадает с principal.workerId.
     @PreAuthorize("hasRole('ROLE_ADMIN') or (#workerId == principal.workerId)")
     @GetMapping("/worker/{workerId}")
     public ResponseEntity<List<Visit>> getVisitsByWorkerId(@PathVariable Long workerId) {

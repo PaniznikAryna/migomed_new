@@ -36,14 +36,11 @@ public class SecurityConfig {
         JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(jwtUtil, userDetailsService);
 
         http
-                .cors().and() // Используем настройки, определенные в bean corsConfigurationSource()
-                .csrf(csrf -> csrf.disable()) // CSRF отключен, так как система без состояния (stateless)
+                .cors().and()
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Для неаутентифицированных пользователей автоматически назначаем роль ROLE_GUEST
                 .anonymous(a -> a.authorities(AuthorityUtils.createAuthorityList("ROLE_GUEST")))
-                // Разрешаем запросы всем, а управление доступом осуществляется через аннотации или внутри фильтров
                 .authorizeHttpRequests(authz -> authz.anyRequest().permitAll())
-                // Добавляем JWT-фильтр в цепочку фильтров перед стандартным фильтром аутентификации
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -54,7 +51,6 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
-    // Глобальная настройка CORS – разрешаем запросы с любых доменов, всех методов, заголовков и передачу куков
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

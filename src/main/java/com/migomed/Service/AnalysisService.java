@@ -28,10 +28,6 @@ public class AnalysisService {
         this.usersRepository = usersRepository;
     }
 
-    /**
-     * Создание нового анализа для указанного сотрудника и пользователя.
-     * URL: POST /analysis/{workerId}/{userId}
-     */
     public Analysis createAnalysis(Long workerId, Long userId, Analysis analysis) {
         Worker worker = workerRepository.findById(workerId)
                 .orElseThrow(() -> new IllegalArgumentException("Работник не найден с id " + workerId));
@@ -42,10 +38,7 @@ public class AnalysisService {
         return analysisRepository.save(analysis);
     }
 
-    /**
-     * Обновление анализа (обновляются поля analysis_date и result).
-     * URL: PUT /analysis/{id}
-     */
+
     public Analysis updateAnalysis(Long id, Analysis updatedAnalysis) {
         Analysis analysis = analysisRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Анализ не найден с id " + id));
@@ -54,10 +47,7 @@ public class AnalysisService {
         return analysisRepository.save(analysis);
     }
 
-    /**
-     * Удаление анализа по id.
-     * URL: DELETE /analysis/{id}
-     */
+
     public void deleteAnalysis(Long id) {
         if (!analysisRepository.existsById(id)) {
             throw new IllegalArgumentException("Анализ не найден с id " + id);
@@ -65,34 +55,21 @@ public class AnalysisService {
         analysisRepository.deleteById(id);
     }
 
-    /**
-     * Получение анализа по id.
-     * URL: GET /analysis/{id}
-     */
     public Optional<Analysis> getAnalysisById(Long id) {
         return analysisRepository.findById(id);
     }
 
-    /**
-     * Получение списка всех анализов.
-     * URL: GET /analysis
-     */
+
     public List<Analysis> getAllAnalyses() {
         return analysisRepository.findAll();
     }
 
-    /**
-     * Получение всех анализов для заданного пользователя.
-     * URL: GET /analysis/user/{userId}
-     */
+
     public List<Analysis> getAnalysesByUserId(Long userId) {
         return analysisRepository.findByUser_Id(userId);
     }
 
-    /**
-     * Получение всех анализов для заданного сотрудника.
-     * URL: GET /analysis/worker/{workerId}
-     */
+
     public List<Analysis> getAnalysesByWorkerId(Long workerId) {
         return analysisRepository.findByWorker_Id(workerId);
     }

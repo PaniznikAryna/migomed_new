@@ -53,7 +53,7 @@ public class Users {
 
     @Column(nullable = false, length = 255)
     private String password;
-    //
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Worker workerDetails;
 }

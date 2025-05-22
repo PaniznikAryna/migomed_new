@@ -27,7 +27,6 @@ public class AppointmentRecordService {
     }
 
     public AppointmentRecord createRecord(AppointmentRecord record) {
-        // Если в JSON передан вложенный объект worker с id, загрузим его из базы
         if (record.getWorker() != null && record.getWorker().getId() != null) {
             Optional<Worker> workerOpt = workerRepository.findById(record.getWorker().getId());
             if (workerOpt.isPresent()) {
@@ -42,13 +41,11 @@ public class AppointmentRecordService {
     public AppointmentRecord updateRecord(Long id, AppointmentRecord updatedRecord) {
         AppointmentRecord existing = recordRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Запись не найдена"));
-        // Обновляем сотрудника, если передан новый id
         if (updatedRecord.getWorker() != null && updatedRecord.getWorker().getId() != null) {
             Worker worker = workerRepository.findById(updatedRecord.getWorker().getId())
                     .orElseThrow(() -> new IllegalArgumentException("Сотрудник не найден"));
             existing.setWorker(worker);
         }
-        // Обновляем остальные поля
         existing.setClientInfo(updatedRecord.getClientInfo());
         existing.setPhoneNumber(updatedRecord.getPhoneNumber());
         existing.setAppointmentDate(updatedRecord.getAppointmentDate());
@@ -65,7 +62,6 @@ public class AppointmentRecordService {
         return recordRepository.findById(id);
     }
 
-    // Дополнительный метод для поиска всех записей, относящихся к конкретному сотруднику
     public List<AppointmentRecord> findRecordsByWorkerId(Long workerId) {
         return recordRepository.findByWorker_Id(workerId);
     }

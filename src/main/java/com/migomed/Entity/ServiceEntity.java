@@ -17,14 +17,12 @@ import java.util.Set;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 public class ServiceEntity {
-    // Поле идентификатора
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     @ToString.Include
     private Long id;
 
-    // Для поля title используем тип TEXT (без ограничений длины)
     @Column(name = "title", nullable = false, columnDefinition = "TEXT")
     @ToString.Include
     private String title;

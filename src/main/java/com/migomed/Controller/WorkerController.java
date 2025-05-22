@@ -21,7 +21,6 @@ public class WorkerController {
         this.workerService = workerService;
     }
 
-    // Создание нового сотрудника (привязка к пользователю с userId) – только админ
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/{userId}")
     public ResponseEntity<Worker> createWorker(@PathVariable Long userId, @RequestBody Worker workerDetails) {
@@ -33,7 +32,6 @@ public class WorkerController {
         }
     }
 
-    // Редактирование работника – только админ
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{workerId}")
     public ResponseEntity<Worker> updateWorker(@PathVariable Long workerId, @RequestBody Worker updatedWorker) {
@@ -45,13 +43,11 @@ public class WorkerController {
         }
     }
 
-    // Вывод всех работников – доступен всем
     @GetMapping
     public ResponseEntity<List<Worker>> getAllWorkers() {
         return ResponseEntity.ok(workerService.getAllWorkers());
     }
 
-    // Получение работника по ID – доступен всем
     @GetMapping("/{workerId}")
     public ResponseEntity<Worker> getWorkerById(@PathVariable Long workerId) {
         Optional<Worker> workerOpt = workerService.getWorkerById(workerId);
@@ -59,26 +55,22 @@ public class WorkerController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Поиск работников по специализации – доступен всем
     @GetMapping("/search")
     public ResponseEntity<List<Worker>> searchWorkers(@RequestParam String specialization) {
         List<Worker> result = workerService.searchBySpecialization(specialization);
         return ResponseEntity.ok(result);
     }
 
-    // Вывод работников, являющихся администраторами – доступен всем
     @GetMapping("/admins")
     public ResponseEntity<List<Worker>> getAdmins() {
         return ResponseEntity.ok(workerService.getAdmins());
     }
 
-    // Вывод работников, не являющихся администраторами – доступен всем
     @GetMapping("/non-admins")
     public ResponseEntity<List<Worker>> getNonAdmins() {
         return ResponseEntity.ok(workerService.getNoAdmins());
     }
 
-    // Удаление работника – только админ.
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{workerId}")
     public ResponseEntity<Void> deleteWorker(@PathVariable Long workerId) {

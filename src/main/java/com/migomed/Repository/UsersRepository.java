@@ -8,7 +8,6 @@ import java.util.List;
 
 @Repository
 public interface UsersRepository extends JpaRepository<Users, Long> {
-    // Теперь этот метод возвращает список, так как фамилии могут повторяться
     List<Users> findBySurname(String surname);
 
     List<Users> findBySurnameContainingIgnoreCase(String surname);

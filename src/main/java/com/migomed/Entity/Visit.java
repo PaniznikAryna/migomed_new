@@ -20,7 +20,6 @@ public class Visit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Изменяем тип поля на LocalDate для хранения даты визита
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Column(name = "date_visit", nullable = false)
     private LocalDate dateVisit;
@@ -28,12 +27,10 @@ public class Visit {
     @Column(name = "appointments", nullable = false)
     private String appointments;
 
-    // Связь ManyToOne с сущностью Worker (один сотрудник может иметь много визитов)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_worker", nullable = false)
     private Worker worker;
 
-    // Связь ManyToOne с сущностью Users (один пользователь может создавать много визитов)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user", nullable = false)
     private Users user;

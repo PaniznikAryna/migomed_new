@@ -28,7 +28,6 @@ public class ServiceEntityService {
     }
 
     public ServiceEntity createService(ServiceEntity serviceEntity) {
-        // Обрабатываем переданных работников: идём по копии коллекции, чтобы избежать модификации
         if (serviceEntity.getWorkers() != null && !serviceEntity.getWorkers().isEmpty()) {
             Set<Worker> fullWorkers = new HashSet<>();
             for (Worker worker : new HashSet<>(serviceEntity.getWorkers())) {
@@ -52,7 +51,6 @@ public class ServiceEntityService {
                 .orElseThrow(() -> new IllegalArgumentException("Услуга не найдена"));
         existing.setTitle(updatedService.getTitle());
         existing.setCost(updatedService.getCost());
-        // Обновляем связь с работниками аналогичным образом:
         if (updatedService.getWorkers() != null && !updatedService.getWorkers().isEmpty()) {
             Set<Worker> fullWorkers = new HashSet<>();
             for (Worker worker : updatedService.getWorkers()) {
@@ -78,7 +76,6 @@ public class ServiceEntityService {
         return serviceRepository.findById(id);
     }
 
-    // Новый метод поиска по секции
     public List<ServiceEntity> searchBySection(String section) {
         return serviceRepository.findBySectionContainingIgnoreCase(section);
     }

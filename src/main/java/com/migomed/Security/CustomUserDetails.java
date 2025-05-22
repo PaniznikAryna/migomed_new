@@ -16,8 +16,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // При необходимости возвращайте роли/права пользователя.
-        // Если пользователей нет ролей, можно вернуть пустой список:
         return Collections.emptyList();
     }
 
@@ -28,7 +26,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        // Вы можете использовать другой уникальный идентификатор
         return user.getSurname();
     }
 

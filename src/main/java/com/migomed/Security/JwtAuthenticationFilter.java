@@ -36,11 +36,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = null;
         final String authHeader = request.getHeader("Authorization");
 
-        // Сначала пытаемся извлечь токен из заголовка Authorization (формат: "Bearer <token>")
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
         }
-        // Если заголовок отсутствует – пробуем извлечь токен из куки с именем "jwt"
         else if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("jwt".equals(cookie.getName())) {
@@ -50,7 +48,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
-        // Если токен не найден или пустой, передаем запрос дальше; для таких пользователей SecurityConfig назначит роль ROLE_GUEST
         if (token == null || token.isBlank()) {
             filterChain.doFilter(request, response);
             return;
@@ -66,19 +63,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if (jwtUtil.validateToken(token, username)) {
-                // Извлекаем claim "roles" из токена
                 Claims claims = jwtUtil.extractAllClaims(token);
                 List<?> rolesClaim = claims.get("roles", List.class);
-                // Преобразуем каждую роль в объект GrantedAuthority
                 List<GrantedAuthority> authorities = rolesClaim.stream()
                         .map(role -> new SimpleGrantedAuthority(role.toString()))
                         .collect(Collectors.toList());
 
-                // Создаем объект аутентификации, включающий полученные полномочия (authorities)
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                // Устанавливаем объект аутентификации в SecurityContextHolder
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }

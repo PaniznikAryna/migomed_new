@@ -40,7 +40,7 @@ public class UsersService {
                 .password(hashed)
                 .dateOfBirth(dto.getDateOfBirth().toLocalDate())
                 .worker(dto.getWorker())
-                .gender(dto.getGender()) // Сохранение пола
+                .gender(dto.getGender())
                 .build();
         return usersRepository.save(user);
     }
@@ -72,7 +72,7 @@ public class UsersService {
             existingUser.setWorker(updatedUser.getWorker());
         }
         if (updatedUser.getGender() != null) {
-            existingUser.setGender(updatedUser.getGender()); // Обновление пола
+            existingUser.setGender(updatedUser.getGender());
         }
         if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
             existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
@@ -88,21 +88,17 @@ public class UsersService {
     public Users loginUserBySurnameAndPassword(String surname, String rawPassword) {
         List<Users> users = usersRepository.findBySurname(surname);
 
-        // Если по фамилии ничего не найдено, считаем, что указана неверная фамилия
         if (users.isEmpty()) {
-            return null; // или: throw new UsernameNotFoundException("Неверная фамилия: " + surname);
+            return null;
         }
 
-        // Перебираем всех пользователей с этой фамилией
         for (Users user : users) {
-            // Если пароль совпадает, возвращаем пользователя
             if (rawPassword != null && !rawPassword.isEmpty() && passwordEncoder.matches(rawPassword, user.getPassword())) {
                 return user;
             }
         }
 
-        // Если ни у одного пользователя пароль не совпал, возвращаем null (или выбрасываем исключение)
-        return null; // или: throw new BadCredentialsException("Неверный логин или пароль для фамилии: " + surname);
+        return null;
     }
 
     public Optional<Users> findById(Long id) {

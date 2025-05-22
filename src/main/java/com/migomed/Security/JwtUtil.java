@@ -17,7 +17,6 @@ import com.migomed.Service.UsersService;
 @Component
 public class JwtUtil {
 
-    // Используем фиксированное значение для ключа
     private static final String SECRET = "YourSuperSecretKeyForJWTSigning_ReplaceThisWithARealSecretThatIsLongEnough";
     private static final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 

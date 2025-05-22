@@ -27,7 +27,6 @@ public class VisitService {
         this.usersRepository = usersRepository;
     }
 
-    // Создание нового визита, связываем с сотрудником и пользователем
     public Visit createVisit(Long workerId, Long userId, Visit visit) {
         Worker worker = workerRepository.findById(workerId)
                 .orElseThrow(() -> new IllegalArgumentException("Сотрудник не найден с id " + workerId));
@@ -38,7 +37,6 @@ public class VisitService {
         return visitRepository.save(visit);
     }
 
-    // Обновление визита по id (обновляются время и описание)
     public Visit updateVisit(Long id, Visit updatedVisit) {
         Visit visit = visitRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Визит не найден с id " + id));
@@ -47,7 +45,6 @@ public class VisitService {
         return visitRepository.save(visit);
     }
 
-    // Удаление визита по id
     public void deleteVisit(Long id) {
         if (!visitRepository.existsById(id)) {
             throw new IllegalArgumentException("Визит не найден с id " + id);
@@ -55,22 +52,18 @@ public class VisitService {
         visitRepository.deleteById(id);
     }
 
-    // Получение визита по id
     public Optional<Visit> getVisitById(Long id) {
         return visitRepository.findById(id);
     }
 
-    // Получение списка всех визитов
     public List<Visit> getAllVisits() {
         return visitRepository.findAll();
     }
 
-    // Получение всех визитов определённого пользователя
     public List<Visit> getVisitsByUserId(Long userId) {
         return visitRepository.findByUser_Id(userId);
     }
 
-    // Получение всех визитов определённого сотрудника
     public List<Visit> getVisitsByWorkerId(Long workerId) {
         return visitRepository.findByWorker_Id(workerId);
     }

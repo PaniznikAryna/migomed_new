@@ -39,7 +39,6 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неверный логин или пароль");
         }
 
-        // Формирование списка ролей на основе данных из базы
         List<String> roles;
         if (user.getWorkerDetails() == null) {
             roles = List.of("ROLE_USER");
@@ -51,7 +50,6 @@ public class AuthController {
             }
         }
 
-        // Генерация полного JWT-токена со subject равным id пользователя
         String token = jwtUtil.generateToken(String.valueOf(user.getId()), roles);
         return ResponseEntity.ok(token);
     }

@@ -21,7 +21,6 @@ public class AnalysisController {
         this.analysisService = analysisService;
     }
 
-    // Создание анализа – может создать только администратор или сотрудник, если его workerId совпадает с {workerId}.
     @PreAuthorize("hasRole('ROLE_ADMIN') or (#workerId == principal.workerId)")
     @PostMapping("/{workerId}/{userId}")
     public ResponseEntity<Analysis> createAnalysis(@PathVariable Long workerId,
@@ -35,7 +34,6 @@ public class AnalysisController {
         }
     }
 
-    // Обновление анализа – разрешено, если пользователь админ, или если анализ принадлежит сотруднику, чей workerId совпадает с authenticated worker.
     @PreAuthorize("hasRole('ROLE_ADMIN') or @analysisService.isAnalysisOwnedByWorker(#id, principal.workerId)")
     @PutMapping("/{id}")
     public ResponseEntity<Analysis> updateAnalysis(@PathVariable Long id,
@@ -48,7 +46,6 @@ public class AnalysisController {
         }
     }
 
-    // Удаление анализа – разрешено, если пользователь админ, или если анализ принадлежит сотруднику, чей workerId совпадает с current worker.
     @PreAuthorize("hasRole('ROLE_ADMIN') or @analysisService.isAnalysisOwnedByWorker(#id, principal.workerId)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAnalysis(@PathVariable Long id) {
@@ -60,8 +57,6 @@ public class AnalysisController {
         }
     }
 
-    // Получение анализа по id – разрешено, если админ, или если анализ принадлежит сотруднику (worker) с совпадающим workerId,
-    // или если анализ принадлежит пользователю (user) с совпадающим userId.
     @PreAuthorize("hasRole('ROLE_ADMIN') or @analysisService.isAnalysisOwnedByWorker(#id, principal.workerId) or @analysisService.isAnalysisBelongsToUser(#id, principal.userId)")
     @GetMapping("/{id}")
     public ResponseEntity<Analysis> getAnalysisById(@PathVariable Long id) {
@@ -70,15 +65,12 @@ public class AnalysisController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Получение всех анализов – доступно только администратору.
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<List<Analysis>> getAllAnalyses() {
         return ResponseEntity.ok(analysisService.getAllAnalyses());
     }
 
-    // Получение анализов по id пользователя – разрешено, если authenticated пользователь совпадает с userId,
-    // или если пользователь является администратором, или если это запрос сотрудника (любого, т.е. наличие workerId в principal).
     @PreAuthorize("hasRole('ROLE_ADMIN') or (#userId == principal.userId) or (principal.workerId != null)")
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Analysis>> getAnalysesByUserId(@PathVariable Long userId) {
@@ -86,8 +78,6 @@ public class AnalysisController {
         return ResponseEntity.ok(analyses);
     }
 
-    // Получение анализов по id сотрудника – разрешено, если authenticated сотрудник имеет workerId, совпадающий с {workerId},
-    // или если пользователь является администратором.
     @PreAuthorize("hasRole('ROLE_ADMIN') or (#workerId == principal.workerId)")
     @GetMapping("/worker/{workerId}")
     public ResponseEntity<List<Analysis>> getAnalysesByWorkerId(@PathVariable Long workerId) {

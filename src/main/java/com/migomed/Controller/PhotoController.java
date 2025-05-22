@@ -20,7 +20,6 @@ public class PhotoController {
         this.photoService = photoService;
     }
 
-    // Добавление фото – только ADMIN
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<Photo> createPhoto(@RequestBody Photo photo) {
@@ -28,7 +27,6 @@ public class PhotoController {
         return ResponseEntity.ok(savedPhoto);
     }
 
-    // Редактирование фото – только ADMIN
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Photo> updatePhoto(@PathVariable Long id, @RequestBody Photo photo) {
@@ -36,7 +34,6 @@ public class PhotoController {
         return ResponseEntity.ok(updatedPhoto);
     }
 
-    // Удаление фото – только ADMIN
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePhoto(@PathVariable Long id) {
@@ -44,21 +41,18 @@ public class PhotoController {
         return ResponseEntity.noContent().build();
     }
 
-    // Просмотр всех фото – доступно всем
     @GetMapping
     public ResponseEntity<List<Photo>> getAllPhotos() {
         List<Photo> photos = photoService.getAllPhotos();
         return ResponseEntity.ok(photos);
     }
 
-    // Просмотр одного фото – доступно всем
     @GetMapping("/{id}")
     public ResponseEntity<Photo> getPhotoById(@PathVariable Long id) {
         Photo photo = photoService.getPhotoById(id);
         return ResponseEntity.ok(photo);
     }
 
-    // Поиск фото по секции – только ADMIN
     //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/search")
     public ResponseEntity<List<Photo>> searchPhotosBySection(@RequestParam String section) {
