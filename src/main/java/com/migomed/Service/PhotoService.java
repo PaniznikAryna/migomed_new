@@ -22,7 +22,7 @@ public class PhotoService {
 
     public Photo updatePhoto(Long id, Photo updatedPhoto) {
         Photo existing = photoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Photo not found with id " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Фото не найдено с id " + id));
         existing.setPhotoPath(updatedPhoto.getPhotoPath());
         existing.setSection(updatedPhoto.getSection());
         return photoRepository.save(existing);
@@ -30,7 +30,7 @@ public class PhotoService {
 
     public void deletePhoto(Long id) {
         Photo existing = photoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Photo not found with id " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Фото не найдено с id " + id));
         photoRepository.delete(existing);
     }
 
@@ -40,7 +40,7 @@ public class PhotoService {
 
     public Photo getPhotoById(Long id) {
         return photoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Photo not found with id " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Фото не найдено с id " + id));
     }
 
     public List<Photo> searchPhotosBySection(String section) {

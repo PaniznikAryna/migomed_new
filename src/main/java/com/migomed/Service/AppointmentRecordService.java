@@ -14,7 +14,7 @@ import java.util.Optional;
 public class AppointmentRecordService {
 
     private final AppointmentRecordRepository recordRepository;
-    private final WorkerRepository workerRepository; // Для загрузки объекта Worker
+    private final WorkerRepository workerRepository;
 
     @Autowired
     public AppointmentRecordService(AppointmentRecordRepository recordRepository, WorkerRepository workerRepository) {

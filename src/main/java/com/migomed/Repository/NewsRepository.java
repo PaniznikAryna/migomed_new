@@ -8,4 +8,5 @@ import java.util.List;
 @Repository
 public interface NewsRepository extends JpaRepository<News, Long> {
     List<News> findByHeadlineContainingIgnoreCase(String headline);
+    List<News> findAllByOrderByPublicationDateDesc();
 }

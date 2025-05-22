@@ -52,4 +52,10 @@ public class NewsController {
         News news = newsService.getNewsById(id);
         return ResponseEntity.ok(news);
     }
+
+    @GetMapping("/latest")
+    public ResponseEntity<List<News>> getLatestNews() {
+        return ResponseEntity.ok(newsService.getLatestNews());
+    }
+
 }

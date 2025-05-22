@@ -22,7 +22,7 @@ public class NewsService {
 
     public News updateNews(Long id, News updatedNews) {
         News existing = newsRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("News not found with id " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Новость не найдена с id " + id));
         existing.setHeadline(updatedNews.getHeadline());
         existing.setPublicationDate(updatedNews.getPublicationDate());
         existing.setContent(updatedNews.getContent());
@@ -32,7 +32,7 @@ public class NewsService {
 
     public void deleteNews(Long id) {
         News existing = newsRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("News not found with id " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Новость не найдена с id " + id));
         newsRepository.delete(existing);
     }
 
@@ -42,10 +42,15 @@ public class NewsService {
 
     public News getNewsById(Long id) {
         return newsRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("News not found with id " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Новость не найдена с id  " + id));
     }
 
     public List<News> searchNewsByHeadline(String headline) {
         return newsRepository.findByHeadlineContainingIgnoreCase(headline);
     }
+
+    public List<News> getLatestNews() {
+        return newsRepository.findAllByOrderByPublicationDateDesc();
+    }
+
 }
