@@ -10,15 +10,22 @@ public class CustomUserDetails implements UserDetails {
 
     private final Users user;
     private final Long userId;
+    private final Long workerId;
 
     public CustomUserDetails(Users user) {
         this.user = user;
         this.userId = user.getId();
+        this.workerId = (user.getWorkerDetails() != null) ? user.getWorkerDetails().getId() : null;
     }
 
     public Long getUserId() {
         return userId;
     }
+
+    public Long getWorkerId() {
+        return workerId;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList();
