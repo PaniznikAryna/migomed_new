@@ -9,11 +9,16 @@ import java.util.Collections;
 public class CustomUserDetails implements UserDetails {
 
     private final Users user;
+    private final Long userId;
 
     public CustomUserDetails(Users user) {
         this.user = user;
+        this.userId = user.getId();
     }
 
+    public Long getUserId() {
+        return userId;
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList();
