@@ -22,9 +22,11 @@ public class JwtUtil {
 
     public static final long EXPIRATION_TIME = 12 * 60 * 60 * 1000L; // 12 часов
 
-    public String generateToken(String subject, List<String> roles) {
-        Claims claims = Jwts.claims().setSubject(subject);
+    public String generateToken(String surname, Long userId, List<String> roles) {
+        Claims claims = Jwts.claims().setSubject(surname);
+        claims.put("userId", userId);
         claims.put("roles", roles);
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
@@ -45,6 +47,24 @@ public class JwtUtil {
     public String extractUsername(String token) {
         return extractAllClaims(token).getSubject();
     }
+
+    public Long extractUserId(String token) {
+        if (token == null || token.isBlank()) {
+            System.out.println("Ошибка: токен пустой или null");
+            return null;
+        }
+
+        try {
+            Claims claims = extractAllClaims(token);
+            return claims.get("userId", Long.class);
+        } catch (Exception e) {
+            System.out.println("Ошибка разбора токена: " + e.getMessage());
+            return null;
+        }
+    }
+
+
+
 
     public boolean validateToken(String token, String subject) {
         try {

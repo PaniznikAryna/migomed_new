@@ -28,13 +28,15 @@ public class UsersController {
         return ResponseEntity.ok(usersService.findAll());
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or #id == T(java.lang.Long).parseLong(authentication.name)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (@jwtUtil.extractUserId(#token) == #id)")
     @GetMapping("/{id}")
-    public ResponseEntity<Users> getUserById(@PathVariable Long id) {
+    public ResponseEntity<Users> getUserById(@PathVariable Long id, @RequestHeader("Authorization") String token) {
         return usersService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+
 
     @GetMapping("/workers")
     public ResponseEntity<List<Users>> getWorkers() {

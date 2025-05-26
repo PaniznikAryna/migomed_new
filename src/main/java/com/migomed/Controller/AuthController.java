@@ -50,7 +50,7 @@ public class AuthController {
             }
         }
 
-        String token = jwtUtil.generateToken(String.valueOf(user.getId()), roles);
+        String token = jwtUtil.generateToken(String.valueOf(user.getId()), user.getId(), roles);
         return ResponseEntity.ok(token);
     }
 
