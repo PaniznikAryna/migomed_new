@@ -20,7 +20,7 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     @Autowired
-    public AuthController(UsersService usersService, JwtUtil jwtUtil) { // внедряем через конструктор
+    public AuthController(UsersService usersService, JwtUtil jwtUtil) { 
         this.usersService = usersService;
         this.jwtUtil = jwtUtil;
     }
