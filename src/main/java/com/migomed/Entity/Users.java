@@ -49,7 +49,7 @@ public class Users {
 
     @Column(nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
-    private Gender gender;  // Добавляем поле gender
+    private Gender gender; 
 
     @Column(nullable = false, length = 255)
     private String password;
